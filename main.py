@@ -10,15 +10,26 @@ MAX_SIZE = (720, 560)
 textmark = TextMark()
 
 
+def update_opacity(new_value):
+    opacity_percentage = int(opacity.get())
+    opacity_label.config(text=f"{opacity_percentage}%")
+
+    if radio_value.get() == "text":
+        textmark.opacity = int((255*opacity_percentage)/100)
+        textmark_active()
+
+
 def update_textbox(event):
     textmark.text = text_box.get()
     textmark_active()
+
 
 def update_color():
     color_code = colorchooser.askcolor(title="Choose color")
     color_box.config(background=color_code[1])
     textmark.color = color_code[0]
     textmark_active()
+
 
 def textmark_active():
     global DISPLAY_IMAGE, BASE_IMAGE
@@ -59,6 +70,8 @@ def upload_image():
 
         text_radio_btn.config(state="normal")
         image_radio_btn.config(state="normal")
+        opacity.config(state="normal")
+        opacity.set(75)
         textmark_active()
 
 
@@ -124,6 +137,19 @@ image_radio_btn = ttk.Radiobutton(root, text="Image Water Mark", value="image", 
 image_radio_btn.pack()
 
 # -------------------------------------------------------------------------------------------------------------------
+
+# ----------------------------------------common options----------------------------------------------------------
+
+opacity = ttk.Scale(from_=0, to=100, command=update_opacity, state="disabled", value=75)
+opacity.pack()
+
+opacity_label = ttk.Label(text=f"{opacity.get()}")
+opacity_label.pack()
+
+
+
+# ----------------------------------------------------------------------------------------------------------------
+
 
 canvas = Canvas(root, width=0, height=0)
 canvas.pack()
