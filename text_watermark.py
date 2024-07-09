@@ -8,9 +8,10 @@ class TextMark:
         self.font_list = sorted(set([f.name for f in fm.fontManager.ttflist]))
         self.text = "PHOTOMARK"
         self.font = "arial"
-        self.opacity = 100
+        self.opacity = 255
         self.size = 40
-        self.color = (255, 255, 255, self.opacity)
+        self.color = (255, 255, 255)
+        self.color_with_opacity = (self.color + (self.opacity, ))
         self.text_width = None
         self.text_height = None
         self.x_pos = 0
@@ -29,7 +30,7 @@ class TextMark:
             pass
 
         else:
-
+            self.color_with_opacity = (self.color + (self.opacity,))
             # determining the size of the text in the give font and size
             self.text_width = font.getbbox(self.text)[2]
             self.text_height = font.getbbox(self.text)[3]
@@ -39,14 +40,13 @@ class TextMark:
 
             # drawing the text in the blank image created
             draw = ImageDraw.Draw(mode="RGBA", im=blank_transparent_image)
-            draw.text((0, 0), text=self.text, fill=self.color, font=font, )
+            draw.text((0, 0), text=self.text, fill=self.color_with_opacity, font=font, )
 
             # applying the rotation if any by default is zero
             # the expand parameter is to avoid cropping of text while rotating
             self.rotated_image = blank_transparent_image.rotate(angle=self.rotation, expand=True)
             self.text_width = self.rotated_image.width
             self.text_height = self.rotated_image.height
-
             self.make_final_image()
 
     def make_final_image(self):

@@ -1,5 +1,5 @@
 from tkinter import *
-from tkinter import ttk, font
+from tkinter import ttk, font, colorchooser
 from tkinter.filedialog import askopenfilename, asksaveasfilename
 from PIL import Image, ImageTk
 from text_watermark import TextMark
@@ -14,11 +14,17 @@ def update_textbox(event):
     textmark.text = text_box.get()
     textmark_active()
 
+def update_color():
+    color_code = colorchooser.askcolor(title="Choose color")
+    color_box.config(background=color_code[1])
+    textmark.color = color_code[0]
+    textmark_active()
 
 def textmark_active():
     global DISPLAY_IMAGE, BASE_IMAGE
     text_box.config(state="normal")
     fonts.config(state="readonly")
+    color_box.configure(state="normal")
 
     textmark.image_to_make(image=BASE_IMAGE)
     textmark.default_pos()
@@ -39,6 +45,7 @@ def font_changed(event):
 def image_mark_active():
     fonts.config(state="disabled")
     text_box.config(state="disabled")
+    color_box.configure(state="disabled")
 
 
 def upload_image():
@@ -105,6 +112,10 @@ fonts.bind("<<ComboboxSelected>>", font_changed)
 fonts.pack()
 fonts.current(2)
 fonts.config(state="disabled")
+
+color_box = Button(width=5, borderwidth=0, background="white", state="disabled", command=update_color)
+color_box.pack()
+
 # --------------------------------------------------------------------------------------------------------------------
 
 # -------------------------------------image watermark --------------------------------------------------------------
