@@ -1,8 +1,9 @@
 from tkinter import *
-from tkinter import ttk, font, colorchooser
+from tkinter import ttk, colorchooser
 from tkinter.filedialog import askopenfilename, asksaveasfilename
 from PIL import Image, ImageTk
 from text_watermark import TextMark
+import subprocess
 
 BASE_IMAGE = None
 DISPLAY_IMAGE = None
@@ -30,7 +31,7 @@ def update_text_size(event):
         size = textmark.size
     else:
         text_size.delete(first=0, last=END)
-        text_size.insert(index=0, string=40)
+        text_size.insert(index=0, string="40")
         size = int(text_size.get())
 
     textmark.size = size
@@ -42,14 +43,14 @@ def update_textbox(event):
     textmark_active()
 
 
-def update_color():
+def update_text_color():
     color_code = colorchooser.askcolor(title="Choose color")
-    color_box.config(background=color_code[1])
+    color_box.config(background=str(color_code[1]))
     textmark.color = color_code[0]
     textmark_active()
 
 
-def font_changed(event):
+def text_font_update(event):
     textmark.font = current_font.get()
     textmark_active()
 
@@ -69,6 +70,7 @@ def update_rotation():
 
 
 def update_opacity(new_value):
+
     opacity_percentage = int(opacity.get())
     opacity_label.config(text=f"{opacity_percentage}%")
 
@@ -95,13 +97,19 @@ def upload_image():
     img_path = askopenfilename(initialdir="../Users/<name>/Pictures",
                                title="Select A File", filetype=(("jpg", "*.jpg"), ("png", "*.png"))).strip()
     if img_path:
-        BASE_IMAGE = Image.open(img_path)
-
         text_radio_btn.config(state="normal")
         image_radio_btn.config(state="normal")
         opacity.config(state="normal")
         rotation.config(state="readonly")
         text_size.config(state="normal")
+        move_up_btn.config(state="normal")
+        move_down_btn.config(state="normal")
+        move_left_btn.config(state="normal")
+        move_right_btn.config(state="normal")
+        reset_pos_btn.config(state="normal")
+        save_btn.config(state="normal")
+
+        BASE_IMAGE = Image.open(img_path)
         textmark.image_to_make(image=BASE_IMAGE)
         textmark.default_pos()
         opacity.set(75)
@@ -133,30 +141,13 @@ def default_position():
     textmark_active()
 
 
-def create_text_mark():
-    # saving the file path of the image to be watermarked only jpeg or png can be selected
-
-    img_path = askopenfilename(initialdir="../Users/<name>/Pictures",
-                               title="Select A File", filetype=(("jpg", "*.jpg"), ("png", "*.png"))).strip()
-    if img_path:
-        image = Image.open(img_path)
-
-        textmark.image_to_make(image=image)
-        textmark.default_pos()
-
-        # making text mark
-        # textmark.make_watermark()
-        textmark.result_image.show()
-    else:
-        pass
-
-
 def save_image():
+
     # save image as a new file
     path = asksaveasfilename(confirmoverwrite=True, defaultextension="png",
                              filetypes=[("png", ".png"), ("jpeg", ".jpg")])
     if path:
-        textmark.result_image.save(path)
+        textmark.result_image.save_btn(path)
 
 
 root = Tk()
@@ -179,12 +170,12 @@ text_box.config(state="disabled")
 current_font = StringVar()
 fonts = ttk.Combobox(root, width=10, state="readonly", textvariable=current_font)
 fonts["values"] = textmark.font_list
-fonts.bind("<<ComboboxSelected>>", font_changed)
+fonts.bind("<<ComboboxSelected>>", text_font_update)
 fonts.pack()
 fonts.current(2)
 fonts.config(state="disabled")
 
-color_box = Button(root, width=5, borderwidth=0, background="white", state="disabled", command=update_color)
+color_box = Button(root, width=5, borderwidth=0, background="white", state="disabled", command=update_text_color)
 color_box.pack()
 
 text_size = Entry(width=5,)
@@ -217,19 +208,24 @@ rotation.config(state="disabled")
 rotation.pack()
 
 # edit position button
-move_up = Button(text="up", command=move_up)
-move_up.pack()
-move_down = Button(text="down", command=move_down)
-move_down.pack()
+move_up_btn = Button(text="up", command=move_up, state="disabled")
+move_up_btn.pack()
 
-move_left = Button(text="left", command=move_left)
-move_left.pack()
+move_down_btn = Button(text="down", command=move_down, state="disabled")
 
-move_right = Button(text="right", command=move_right)
-move_right.pack()
+move_down_btn.pack()
 
-reset_pos = Button(text="reset", command=default_position)
-reset_pos.pack()
+move_left_btn = Button(text="left", command=move_left, state="disabled")
+move_left_btn.pack()
+
+move_right_btn = Button(text="right", command=move_right, state="disabled")
+move_right_btn.pack()
+
+reset_pos_btn = Button(text="reset", command=default_position, state="disabled")
+reset_pos_btn.pack()
+
+save_btn = Button(text="save", command=save_image, state="disabled")
+save_btn.pack()
 # ----------------------------------------------------------------------------------------------------------------
 
 
