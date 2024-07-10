@@ -47,7 +47,7 @@ class TextMark:
             self.rotated_image = blank_transparent_image.rotate(angle=self.rotation, expand=True)
             self.text_width = self.rotated_image.width
             self.text_height = self.rotated_image.height
-            self.make_final_image()
+
 
     def make_final_image(self):
         """makes the text watermark given in the photo"""
@@ -59,35 +59,39 @@ class TextMark:
         new.paste(self.rotated_image, (self.x_pos, self.y_pos))
         self.result_image = Image.alpha_composite(self.result_image, new, )
 
-    def default_position(self):
-        pass
-
-    def update_pos(self, x, y):
-        """receives x and y position to place the text in the image"""
-        self.x_pos = x
-        self.y_pos = y
-        self.make_water_mark()
-
     def default_pos(self):
+        self.rotation = 0
         self.make_water_mark()
         width = self.image.width
         height = self.image.height
         self.x_pos = width - self.text_width - 20
         self.y_pos = height - self.text_height - 20
+        self.rotation = 0
         self.make_water_mark()
+        # self.make_water_mark()
 
-
-    def update_rotation(self, rotation):
-        """receives rotation as parameter and assign to the rotation of the watermark"""
-        self.rotation = rotation
+    def move_up(self):
+        self.y_pos = self.y_pos - 20
         self.make_water_mark()
+        self.make_final_image()
 
+    def move_down(self):
+        self.y_pos = self.y_pos + 20
+        self.make_water_mark()
+        self.make_final_image()
 
-    def update_font(self, font):
-        self.font = font
+    def move_left(self):
+        self.x_pos = self.x_pos - 20
+        self.make_water_mark()
+        self.make_final_image()
 
+    def move_right(self):
+        self.x_pos = self.x_pos + 20
+        self.make_water_mark()
+        self.make_final_image()
 
     def image_to_make(self, image):
         """receives an image to make the watermark"""
         self.image = image
+        self.make_water_mark()
 
