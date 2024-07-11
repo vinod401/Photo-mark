@@ -3,17 +3,21 @@ from tkinter import ttk, colorchooser
 from tkinter.filedialog import askopenfilename, asksaveasfilename
 from PIL import Image, ImageTk
 from text_watermark import TextMark
+from image_mark import ImageMark
 import subprocess
 
 BASE_IMAGE = None
 DISPLAY_IMAGE = None
 MAX_SIZE = (720, 560)
 textmark = TextMark()
-
+image_mark = ImageMark()
 
 # ---------------------------------------------text_water_mark--------------------------------------------------------
 def textmark_active():
+    # disabling image watermark option
+    image_browse_btn.config(state="disabled")
 
+    # enabling text watermark options
     text_box.config(state="normal")
     fonts.config(state="readonly")
     color_box.configure(state="normal")
@@ -65,10 +69,17 @@ def text_font_update(event):
 
 
 def image_mark_active():
+    # disabling text watermark options
     fonts.config(state="disabled")
     text_box.config(state="disabled")
     color_box.configure(state="disabled")
     text_size.config(state="disabled")
+
+    # enabling image water mark option
+    image_browse_btn.config(state="normal")
+
+    image_mark.make_final_image()
+    display_result()
 
 
 def image_browse():
@@ -97,8 +108,13 @@ def update_opacity(new_value):
 
 
 def display_result():
-    global DISPLAY_IMAGE, BASE_IMAGE
-    DISPLAY_IMAGE = textmark.result_image
+    global DISPLAY_IMAGE
+
+    if radio_value.get() == "text":
+        DISPLAY_IMAGE = textmark.result_image
+    else:
+        DISPLAY_IMAGE = image_mark.result_image
+
     DISPLAY_IMAGE.thumbnail(MAX_SIZE)
     DISPLAY_IMAGE = ImageTk.PhotoImage(DISPLAY_IMAGE)
 
@@ -128,10 +144,15 @@ def upload_image():
 
         #  every time a new photo is uploaded by default it applies the text watermark
         BASE_IMAGE = Image.open(img_path)
-        textmark.image_to_make(image=BASE_IMAGE)
-        textmark.default_pos()
+        BASE_IMAGE = BASE_IMAGE.convert("RGBA")
 
+        textmark.image_to_make(image=BASE_IMAGE)
+        image_mark.receive_base_image(image=BASE_IMAGE)
+
+        radio_value.set("text")
         opacity.set(75)
+
+        textmark.default_pos()
         textmark_active()
 
 
@@ -171,9 +192,10 @@ def default_position():
     rotation.set(0)
     if radio_value.get() == "text":
         textmark.default_pos()
+        textmark_active()
     else:
         pass
-    textmark_active()
+
 
 
 def save_image():
@@ -231,7 +253,8 @@ image_radio_btn = ttk.Radiobutton(root, text="Image Water Mark", value="image", 
                                   command=image_mark_active,)
 image_radio_btn.pack()
 
-image_browse_btn = Button(root, text="Browse", command=image_browse)
+image_browse_btn = Button(root, text="Browse", command=image_browse, state="disabled")
+image_browse_btn.pack()
 
 # -------------------------------------------------------------------------------------------------------------------
 

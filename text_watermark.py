@@ -9,7 +9,7 @@ class TextMark:
         self.text = "PHOTOMARK"
         self.font = "arial"
         self.opacity = 255
-        self.size = 40
+        self.size = 5
         self.color = (255, 255, 255)
         self.color_with_opacity = (self.color + (self.opacity, ))
         self.text_width = None
@@ -23,9 +23,10 @@ class TextMark:
         self.result_image = None
 
     def make_water_mark(self):
-        # font = ImageFont.truetype(self.font, self.size)
+        # the size is relative to the image size
+        relative_size = int((self.size*self.image.width)/100)
         try:
-            font = ImageFont.truetype(fm.findfont(fm.FontProperties(family=self.font, style=None)), self.size)
+            font = ImageFont.truetype(fm.findfont(fm.FontProperties(family=self.font, style=None)), relative_size)
         except ValueError:
             pass
 
