@@ -11,12 +11,18 @@ MAX_SIZE = (720, 560)
 textmark = TextMark()
 
 
+# ---------------------------------------------text_water_mark--------------------------------------------------------
 def textmark_active():
 
     text_box.config(state="normal")
     fonts.config(state="readonly")
     color_box.configure(state="normal")
     text_size.config(state="normal")
+
+    textmark.opacity = int((255 * opacity.get() / 100))
+    textmark.rotation = int(rotation.get())
+
+    rotation.set(textmark.rotation)
 
     textmark.image_to_make(image=BASE_IMAGE)
     textmark.make_final_image()
@@ -53,6 +59,9 @@ def update_text_color():
 def text_font_update(event):
     textmark.font = current_font.get()
     textmark_active()
+# ---------------------------------------------------------------------------------------------------------------------
+
+# ---------------------------------------------image_water_mark--------------------------------------------------------
 
 
 def image_mark_active():
@@ -62,20 +71,28 @@ def image_mark_active():
     text_size.config(state="disabled")
 
 
-def update_rotation():
-    rotation_angle = int(rotation.get())
+def image_browse():
 
-    textmark.rotation = rotation_angle
-    textmark_active()
+    # saving the file path of the image to be watermarked only jpeg or png can be selected
+    filetype = (("JPG files", "*.jpg",), ("JPEG files", "*.jpeg",), ("PNG files", "*.png",))
+    img_path = askopenfilename(initialdir="../Users/<name>/Pictures",
+                               title="Select A File", filetypes=filetype)
+    if img_path:
+        water_mark_image = Image.open(img_path)
+
+# ----------------------------------------------------------------------------------------------------------------------
+
+
+def update_rotation():
+    if radio_value.get() == "text":
+        textmark_active()
 
 
 def update_opacity(new_value):
 
-    opacity_percentage = int(opacity.get())
-    opacity_label.config(text=f"{opacity_percentage}%")
+    opacity_label.config(text=f"{int(opacity.get())}%")
 
     if radio_value.get() == "text":
-        textmark.opacity = int((255 * opacity_percentage) / 100)
         textmark_active()
 
 
@@ -93,9 +110,9 @@ def display_result():
 def upload_image():
     global BASE_IMAGE
     # saving the file path of the image to be watermarked only jpeg or png can be selected
-
+    filetype = (("JPG files", "*.jpg",), ("JPEG files", "*.jpeg",), ("PNG files", "*.png",))
     img_path = askopenfilename(initialdir="../Users/<name>/Pictures",
-                               title="Select A File", filetype=(("jpg", "*.jpg"), ("png", "*.png"))).strip()
+                               title="Select A File", filetypes=filetype)
     if img_path:
         text_radio_btn.config(state="normal")
         image_radio_btn.config(state="normal")
@@ -109,45 +126,67 @@ def upload_image():
         reset_pos_btn.config(state="normal")
         save_btn.config(state="normal")
 
+        #  every time a new photo is uploaded by default it applies the text watermark
         BASE_IMAGE = Image.open(img_path)
         textmark.image_to_make(image=BASE_IMAGE)
         textmark.default_pos()
+
         opacity.set(75)
         textmark_active()
 
 
 def move_up():
-    textmark.move_up()
+    if radio_value.get() == "text":
+        textmark.move_up()
+    else:
+        pass
     display_result()
 
 
 def move_down():
-    textmark.move_down()
+    if radio_value.get() == "text":
+        textmark.move_down()
+    else:
+        pass
     display_result()
 
 
 def move_left():
-    textmark.move_left()
+    if radio_value.get() == "text":
+        textmark.move_left()
+    else:
+        pass
     display_result()
 
 
 def move_right():
-    textmark.move_right()
+    if radio_value.get() == "text":
+        textmark.move_right()
+    else:
+        pass
     display_result()
 
 
 def default_position():
-    textmark.default_pos()
+    rotation.set(0)
+    if radio_value.get() == "text":
+        textmark.default_pos()
+    else:
+        pass
     textmark_active()
 
 
 def save_image():
 
     # save image as a new file
+    filetype = [("PNG files", ".png",), ("JPG files", ".jpg",), ("JPEG files", ".jpeg",)]
     path = asksaveasfilename(confirmoverwrite=True, defaultextension="png",
-                             filetypes=[("png", ".png"), ("jpeg", ".jpg")])
+                             filetypes=filetype, title="Photmark", initialfile="Photomark_image")
     if path:
-        textmark.result_image.save_btn(path)
+        if radio_value.get() == "text":
+            textmark.result_image.save(path)
+        else:
+            pass
 
 
 root = Tk()
@@ -191,6 +230,8 @@ text_size.config(state="disabled")
 image_radio_btn = ttk.Radiobutton(root, text="Image Water Mark", value="image", variable=radio_value, state="disabled",
                                   command=image_mark_active,)
 image_radio_btn.pack()
+
+image_browse_btn = Button(root, text="Browse", command=image_browse)
 
 # -------------------------------------------------------------------------------------------------------------------
 

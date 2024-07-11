@@ -66,8 +66,7 @@ class TextMark:
         height = self.image.height
         self.x_pos = width - self.text_width - 20
         self.y_pos = height - self.text_height - 20
-        self.rotation = 0
-        self.make_water_mark()
+
         # self.make_water_mark()
 
     def move_up(self):
