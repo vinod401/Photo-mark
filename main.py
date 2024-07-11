@@ -90,6 +90,9 @@ def image_browse():
                                title="Select A File", filetypes=filetype)
     if img_path:
         water_mark_image = Image.open(img_path)
+        water_mark_image = water_mark_image.convert("RGBA")
+        image_mark.update_image_to_mark(image=water_mark_image)
+        image_mark_active()
 
 # ----------------------------------------------------------------------------------------------------------------------
 

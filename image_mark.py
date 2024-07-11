@@ -23,6 +23,10 @@ class ImageMark:
         self.x_pos = self.base_image.width - self.image_to_mark.width - 20
         self.y_pos = self.base_image.height - self.image_to_mark.height - 20
 
+    def update_image_to_mark(self, image):
+        self.image_to_mark = image
+
+
     def receive_base_image(self, image):
         self.base_image = image
 
