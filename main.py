@@ -23,9 +23,6 @@ def textmark_active():
     color_box.configure(state="normal")
     text_size.config(state="normal")
 
-    textmark.opacity = int((255 * opacity.get() / 100))
-    textmark.rotation = int(rotation.get())
-
     rotation.set(textmark.rotation)
 
     textmark.image_to_make(image=BASE_IMAGE)
@@ -33,19 +30,24 @@ def textmark_active():
     display_result()
 
 
-def update_text_size(event):
-
-    if text_size.get().isdigit():
-        size = int(text_size.get())
-    elif text_size.get() == "":
-        size = textmark.size
+def update_text_size():
+    size = int(text_size.get())
+    # if text_size.get().isdigit():
+    #     size = int(text_size.get())
+    # elif text_size.get() == "":
+    #     size = textmark.size
+    # else:
+    #     text_size.delete(first=0, last=END)
+    #     text_size.insert(index=0, string="40")
+    #     size = int(text_size.get())
+    if radio_value.get() == "text":
+        textmark.size = size
+        textmark.default_pos()
+        textmark_active()
     else:
-        text_size.delete(first=0, last=END)
-        text_size.insert(index=0, string="40")
-        size = int(text_size.get())
+        image_mark.update_size(size=size)
 
-    textmark.size = size
-    textmark_active()
+        image_mark_active()
 
 
 def update_textbox(event):
@@ -73,7 +75,7 @@ def image_mark_active():
     fonts.config(state="disabled")
     text_box.config(state="disabled")
     color_box.configure(state="disabled")
-    text_size.config(state="disabled")
+    # text_size.config(state="disabled")
 
     # enabling image water mark option
     image_browse_btn.config(state="normal")
@@ -99,6 +101,7 @@ def image_browse():
 
 def update_rotation():
     if radio_value.get() == "text":
+        textmark.rotation = int(rotation.get())
         textmark_active()
 
 
@@ -107,6 +110,7 @@ def update_opacity(new_value):
     opacity_label.config(text=f"{int(opacity.get())}%")
 
     if radio_value.get() == "text":
+        textmark.opacity = int((255 * opacity.get() / 100))
         textmark_active()
 
 
@@ -200,7 +204,6 @@ def default_position():
         pass
 
 
-
 def save_image():
 
     # save image as a new file
@@ -211,7 +214,7 @@ def save_image():
         if radio_value.get() == "text":
             textmark.result_image.save(path)
         else:
-            pass
+            image_mark.result_image.save(path)
 
 
 root = Tk()
@@ -242,11 +245,14 @@ fonts.config(state="disabled")
 color_box = Button(root, width=5, borderwidth=0, background="white", state="disabled", command=update_text_color)
 color_box.pack()
 
-text_size = Entry(width=5,)
+# text_size = Entry(width=5,)
+# text_size.pack()
+# text_size.insert(index=0, string=textmark.size)
+# text_size.bind("<KeyRelease>", update_text_size)
+# text_size.config(state="disabled")
+
+text_size = Spinbox(from_=5, to=10, command=update_text_size, wrap=True, state="disabled")
 text_size.pack()
-text_size.insert(index=0, string=textmark.size)
-text_size.bind("<KeyRelease>", update_text_size)
-text_size.config(state="disabled")
 # text_size.config(state="disabled")
 
 # --------------------------------------------------------------------------------------------------------------------
