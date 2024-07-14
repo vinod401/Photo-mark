@@ -1,6 +1,8 @@
 from tkinter import *
 from tkinter import ttk, colorchooser
 from tkinter.filedialog import askopenfilename, asksaveasfilename
+from tkinter.ttk import Style
+
 from PIL import Image, ImageTk
 from text_watermark import TextMark
 from image_mark import ImageMark
@@ -49,6 +51,8 @@ def update_text_color():
 def text_font_update(event):
     textmark.font = current_font.get()
     textmark_active()
+
+
 # ---------------------------------------------------------------------------------------------------------------------
 
 # ---------------------------------------------image_water_mark--------------------------------------------------------
@@ -71,16 +75,19 @@ def image_mark_active():
 
 
 def image_browse():
-
     # saving the file path of the image to be watermarked only jpeg or png can be selected
     filetype = (("JPG files", "*.jpg",), ("JPEG files", "*.jpeg",), ("PNG files", "*.png",))
     img_path = askopenfilename(initialdir="../Users/<name>/Pictures",
                                title="Select A File", filetypes=filetype)
+    image_name = img_path.split("/")
+    image_name = image_name[-1]
+    image_label.config(text=image_name)
     if img_path:
         water_mark_image = Image.open(img_path)
         water_mark_image = water_mark_image.convert("RGBA")
         image_mark.update_image_to_mark(image=water_mark_image)
         image_mark_active()
+
 
 # ----------------------------------------------------------------------------------------------------------------------
 
@@ -95,7 +102,6 @@ def update_rotation():
 
 
 def update_opacity(new_value):
-
     opacity_label.config(text=f"{int(opacity.get())}%")
 
     if radio_value.get() == "text":
@@ -130,8 +136,8 @@ def display_result():
     DISPLAY_IMAGE.thumbnail(MAX_SIZE)
     DISPLAY_IMAGE = ImageTk.PhotoImage(DISPLAY_IMAGE)
 
-    canvas.config(width=720, height=560)
-    canvas.create_image(360, 280, image=DISPLAY_IMAGE)
+    # canvas.config(width=720, height=560)
+    canvas.create_image(460, 356, image=DISPLAY_IMAGE, anchor="center")
     canvas.image = DISPLAY_IMAGE
 
 
@@ -229,11 +235,10 @@ def default_position():
 
 
 def save_image():
-
     # save image as a new file
     filetype = [("PNG files", ".png",), ("JPG files", ".jpg",), ("JPEG files", ".jpeg",)]
     path = asksaveasfilename(confirmoverwrite=True, defaultextension="png",
-                             filetypes=filetype, title="Photmark", initialfile="Photomark_image")
+                             filetypes=filetype, title="Photo mark", initialfile="Photo mark image")
     if path:
         if radio_value.get() == "text":
             textmark.result_image.save(path)
@@ -241,90 +246,124 @@ def save_image():
             image_mark.result_image.save(path)
 
 
-root = Tk()
+# ------------------------------------------- ui   --------------------------------------------------------------------
 
-upload_button = ttk.Button(root, text="Upload", command=upload_image)
-upload_button.pack()
+LITE_BLUE = "#D6DDF0"
+
+
+root = Tk()
+root.title("PhotoMark")
+root.minsize(width=1280, height=760)
+root.maxsize(width=1280, height=760)
+style = Style()
+style.theme_use("vista")
+canvas = Canvas(root, width=1280, height=760)
+canvas.place(x=0, y=0)
+bg = PhotoImage(file="images/ui_images/reference.png")
+background_image = canvas.create_image(640, 380, image=bg)
+
+upload_btn_img = PhotoImage(file="./images/ui_images/upload.png")
+upload_button = Button(root, image=upload_btn_img, command=upload_image, borderwidth=0, highlightthickness=0)
+upload_button.place(x=96, y=665)
+
+save_btn_img = PhotoImage(file="./images/ui_images/save.png")
+save_btn = Button(root, image=save_btn_img, command=save_image, state="disabled", borderwidth=0, highlightthickness=0)
+save_btn.place(x=1073, y=665)
+
+add_more_btn_img = PhotoImage(file="./images/ui_images/add_more.png")
+add_mark = Button(root, image=add_more_btn_img, command=add_more, state="disabled", borderwidth=0, highlightthickness=0)
+add_mark.place(x=868, y=665)
 
 radio_value = StringVar(value="text")
 
 # ----------------------------------------------text watermark -----------------------------------------------------
+
 text_radio_btn = ttk.Radiobutton(root, text="Text Water Mark", value="text", variable=radio_value, state="disabled",
-                                 command=textmark_active)
-text_radio_btn.pack()
-text_box = ttk.Entry(root)
-text_box.pack()
+                                 command=textmark_active, style="TRadiobutton" )
+text_radio_btn.place(x=890, y=120)
+style.configure("TRadiobutton", background=LITE_BLUE, fg="white",)
+
+text_box = Entry(root, relief="flat", disabledbackground="white", disabledforeground=LITE_BLUE)
+text_box.place(x=930, y=155)
 text_box.bind("<KeyRelease>", update_textbox)
 text_box.insert(index=1, string=textmark.text)
 text_box.config(state="disabled")
 
 current_font = StringVar()
-fonts = ttk.Combobox(root, width=10, state="readonly", textvariable=current_font)
+fonts = ttk.Combobox(root, width=23, state="readonly", textvariable=current_font, background="white")
 fonts["values"] = textmark.font_list
 fonts.bind("<<ComboboxSelected>>", text_font_update)
-fonts.pack()
+fonts.place(x=928, y=221)
 fonts.current(2)
 fonts.config(state="disabled")
 
 color_box = Button(root, width=5, borderwidth=0, background="white", state="disabled", command=update_text_color)
-color_box.pack()
-
-
-watermark_size = Spinbox(from_=5, to=10, command=update_size, wrap=True, state="disabled")
-watermark_size.pack()
-
+color_box.place(x=1108, y=221)
 
 # --------------------------------------------------------------------------------------------------------------------
 
 # -------------------------------------image watermark --------------------------------------------------------------
 image_radio_btn = ttk.Radiobutton(root, text="Image Water Mark", value="image", variable=radio_value, state="disabled",
-                                  command=image_mark_active,)
-image_radio_btn.pack()
+                                  command=image_mark_active, )
+image_radio_btn.place(x=890, y=275)
+image_label = Label(text="photo_mark.png", width=25, state="disabled", background="white",)
+image_label.place(x=914, y=308)
 
-image_browse_btn = Button(root, text="Browse", command=image_browse, state="disabled")
-image_browse_btn.pack()
+browse_btn_image = PhotoImage(file="./images/ui_images/browse.png")
+image_browse_btn = Button(root, image=browse_btn_image, command=image_browse, state="disabled", borderwidth=0,
+                          highlightthickness=0, background=LITE_BLUE)
+image_browse_btn.place(x=1051, y=298)
 
 # -------------------------------------------------------------------------------------------------------------------
 
 # ----------------------------------------common options----------------------------------------------------------
 
-opacity = ttk.Scale(root, from_=0, to=100, command=update_opacity, state="disabled", value=75)
-opacity.pack()
 
-opacity_label = ttk.Label(root, text=f"{opacity.get()}")
-opacity_label.pack()
+opacity = ttk.Scale(root, from_=0, to=100, length=65, command=update_opacity, state="disabled", value=75,
+                    style="Horizontal.TScale")
+opacity.place(x=895, y=483)
+style.configure("Horizontal.TScale", background=LITE_BLUE)
 
-rotation = ttk.Spinbox(width=5, from_=0, to=360, increment=30, command=update_rotation, wrap=True, state="readonly",)
+opacity_label = Label(root, text=f"{opacity.get()}%", background="white",)
+opacity_label.place(x=980, y=482)
+
+watermark_size = ttk.Spinbox(from_=5, to=10, width=9, command=update_size, wrap=True, state="disabled",)
+watermark_size.place(x=898, y=420)
+
+rotation = ttk.Spinbox(root, width=9, from_=0, to=360, increment=30, command=update_rotation,
+                       wrap=True, state="readonly", )
 rotation.set(0)
 rotation.config(state="disabled")
-rotation.pack()
+rotation.place(x=898, y=555)
 
-# edit position button
-move_up_btn = Button(text="up", command=move_up, state="disabled")
-move_up_btn.pack()
+# edit position button---------------------------------------------------------------------------------------------
+up_btn_img = PhotoImage(file="./images/ui_images/up.png")
+move_up_btn = Button(root, image=up_btn_img, command=move_up, state="disabled", borderwidth=0,
+                     highlightthickness=0, background=LITE_BLUE)
+move_up_btn.place(x=1120, y=438)
 
-move_down_btn = Button(text="down", command=move_down, state="disabled")
+down_btn_img = PhotoImage(file="./images/ui_images/down.png")
+move_down_btn = Button(root, image=down_btn_img, command=move_down, state="disabled", borderwidth=0,
+                       highlightthickness=0, background=LITE_BLUE)
 
-move_down_btn.pack()
+move_down_btn.place(x=1120, y=525)
 
-move_left_btn = Button(text="left", command=move_left, state="disabled")
-move_left_btn.pack()
+left_btn_img = PhotoImage(file="./images/ui_images/left.png")
+move_left_btn = Button(root, image=left_btn_img, command=move_left, state="disabled", borderwidth=0,
+                       highlightthickness=0, background=LITE_BLUE)
+move_left_btn.place(x=1069, y=481)
 
-move_right_btn = Button(text="right", command=move_right, state="disabled")
-move_right_btn.pack()
+right_btn_img = PhotoImage(file="./images/ui_images/right.png")
+move_right_btn = Button(root, image=right_btn_img, command=move_right, state="disabled", borderwidth=0,
+                        highlightthickness=0, background=LITE_BLUE)
+move_right_btn.place(x=1172, y=481)
 
-reset_pos_btn = Button(text="reset", command=default_position, state="disabled")
-reset_pos_btn.pack()
+reset_btn_img = PhotoImage(file="./images/ui_images/reset.png")
+reset_pos_btn = Button(root, image=reset_btn_img, command=default_position, state="disabled", borderwidth=0,
+                       highlightthickness=0, background=LITE_BLUE)
+reset_pos_btn.place(x=1108, y=478)
 
-save_btn = Button(text="save", command=save_image, state="disabled")
-save_btn.pack()
-
-add_mark = Button(text="Add more mark", command=add_more, state="disabled")
-add_mark.pack()
 # ----------------------------------------------------------------------------------------------------------------
 
-
-canvas = Canvas(root, width=0, height=0)
-canvas.pack()
 
 root.mainloop()
