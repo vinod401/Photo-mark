@@ -1,3 +1,4 @@
+import tkinter.messagebox
 from tkinter import *
 from tkinter import ttk, colorchooser
 from tkinter.filedialog import askopenfilename, asksaveasfilename
@@ -6,7 +7,7 @@ from tkinter.ttk import Style
 from PIL import Image, ImageTk
 from text_watermark import TextMark
 from image_mark import ImageMark
-import subprocess
+
 
 BASE_IMAGE = None
 DISPLAY_IMAGE = None
@@ -244,6 +245,9 @@ def save_image():
             textmark.result_image.save(path)
         else:
             image_mark.result_image.save(path)
+        tkinter.messagebox.showinfo(title="Success", message=f"File successfully saved at location\n{path}")
+
+
 
 
 # ------------------------------------------- ui   --------------------------------------------------------------------
