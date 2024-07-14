@@ -24,6 +24,8 @@ def textmark_active():
     text_size.config(state="normal")
 
     rotation.set(textmark.rotation)
+    text_size.delete(0, END)
+    text_size.insert(1, textmark.size)
 
     textmark.image_to_make(image=BASE_IMAGE)
     textmark.make_final_image()
@@ -79,6 +81,8 @@ def image_mark_active():
 
     # enabling image water mark option
     image_browse_btn.config(state="normal")
+    text_size.delete(0, END)
+    text_size.insert(1, image_mark.current_size)
 
     image_mark.make_final_image()
     display_result()
@@ -141,7 +145,7 @@ def upload_image():
         image_radio_btn.config(state="normal")
         opacity.config(state="normal")
         rotation.config(state="readonly")
-        text_size.config(state="normal")
+        text_size.config(state="readonly")
         move_up_btn.config(state="normal")
         move_down_btn.config(state="normal")
         move_left_btn.config(state="normal")

@@ -12,9 +12,9 @@ class ImageMark:
         self.y_pos = None
         self.width = None
         self.height = None
+        self.current_size = 5
         self.sizes = None
         self.processed_watermark = None
-
 
     def make_final_image(self):
         self.make_default_pos()
@@ -28,6 +28,7 @@ class ImageMark:
         self.y_pos = self.base_image.height - self.processed_watermark.height - 20
 
     def update_size(self, size):
+        self.current_size = size
         self.processed_watermark = self.image_to_mark.resize(self.sizes[size])
 
     def update_image_to_mark(self, image):
@@ -37,8 +38,8 @@ class ImageMark:
         # self.processed_watermark = self.image_to_mark.resize(self.sizes[5], resample=Image.Resampling.LANCZOS)
 
     def update_info(self):
-        width = int((self.base_image.width / 100))
-        height = int((self.base_image.height / 100))
+        width = int((self.base_image.width*15)/100)
+        height = int((self.base_image.height*15)/100)
         self.processed_watermark = self.image_to_mark.copy()
 
         self.processed_watermark.thumbnail((width, height))
@@ -47,12 +48,12 @@ class ImageMark:
         height = int(self.processed_watermark.height)
 
         self.sizes = {
-            5: (width*10, height*10),
-            6: (width * 20, height * 20),
-            7: (width * 30, height * 30),
-            8: (width * 40, height * 40),
-            9: (width * 50, height * 50),
-            10: (width * 100, height * 100)
+            5: (width, height),
+            6: (width * 2, height * 2),
+            7: (width * 3, height * 3),
+            8: (width * 4, height * 4),
+            9: (width * 5, height * 5),
+            10: (width * 6, height * 6)
         }
 
     def receive_base_image(self, image):
