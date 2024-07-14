@@ -61,7 +61,7 @@ class TextMark:
         self.result_image = Image.alpha_composite(self.result_image, new, )
 
     def default_pos(self):
-        self.rotation = 0
+
         self.make_water_mark()
         width = self.image.width
         height = self.image.height

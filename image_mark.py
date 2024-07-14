@@ -14,13 +14,14 @@ class ImageMark:
         self.height = None
         self.current_size = 5
         self.sizes = None
+        self.rotation = 0
         self.processed_watermark = None
 
     def make_final_image(self):
-        self.make_default_pos()
-
+        # self.make_default_pos()
+        rotated_image = self.processed_watermark.rotate(angle=self.rotation, expand=True, )
         new = Image.new("RGBA", self.base_image.size, (255, 255, 255, 0), )
-        new.paste(self.processed_watermark, (self.x_pos, self.y_pos))
+        new.paste(rotated_image, (self.x_pos, self.y_pos))
         self.result_image = Image.alpha_composite(self.base_image, new, )
 
     def make_default_pos(self):
