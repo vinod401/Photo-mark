@@ -101,6 +101,9 @@ class ImageMark:
         self.base_image = image
         self.update_info()
 
+    def put_default_mark(self):
+        self.image_to_mark = default_image
+        self.update_info()
 
 
 

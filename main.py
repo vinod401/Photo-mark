@@ -12,6 +12,7 @@ MAX_SIZE = (720, 560)
 textmark = TextMark()
 image_mark = ImageMark()
 
+
 # ---------------------------------------------text_water_mark--------------------------------------------------------
 def textmark_active():
     # disabling image watermark option
@@ -134,6 +135,18 @@ def display_result():
     canvas.image = DISPLAY_IMAGE
 
 
+def add_more():
+    global BASE_IMAGE
+    if radio_value.get() == "text":
+        BASE_IMAGE = textmark.result_image
+
+    else:
+        BASE_IMAGE = image_mark.result_image
+        image_mark.put_default_mark()
+
+    initial_process()
+
+
 def upload_image():
     global BASE_IMAGE
     # saving the file path of the image to be watermarked only jpeg or png can be selected
@@ -152,20 +165,24 @@ def upload_image():
         move_right_btn.config(state="normal")
         reset_pos_btn.config(state="normal")
         save_btn.config(state="normal")
-
-        #  every time a new photo is uploaded by default it applies the text watermark
+        add_mark.config(state="normal")
         BASE_IMAGE = Image.open(img_path)
         BASE_IMAGE = BASE_IMAGE.convert("RGBA")
 
-        image_mark.receive_base_image(image=BASE_IMAGE)
-        image_mark.make_default_pos()
-        image_mark.update_opacity()
+        initial_process()
 
-        radio_value.set("text")
-        opacity.set(75)
 
-        textmark.default_pos()
-        textmark_active()
+def initial_process():
+    global BASE_IMAGE
+    image_mark.receive_base_image(image=BASE_IMAGE)
+    image_mark.make_default_pos()
+    image_mark.update_opacity()
+
+    radio_value.set("text")
+    opacity.set(75)
+
+    textmark.default_pos()
+    textmark_active()
 
 
 def move_up():
@@ -301,6 +318,9 @@ reset_pos_btn.pack()
 
 save_btn = Button(text="save", command=save_image, state="disabled")
 save_btn.pack()
+
+add_mark = Button(text="Add more mark", command=add_more, state="disabled")
+add_mark.pack()
 # ----------------------------------------------------------------------------------------------------------------
 
 
