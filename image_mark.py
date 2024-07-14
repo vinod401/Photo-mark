@@ -5,6 +5,7 @@ default_image = default_image.convert("RGBA")
 
 class ImageMark:
     def __init__(self):
+        self.opacity = 191
         self.base_image = None
         self.image_to_mark = default_image
         self.result_image = None
@@ -15,22 +16,41 @@ class ImageMark:
         self.current_size = 5
         self.sizes = None
         self.rotation = 0
-        self.processed_watermark = None
+        self.size_adjusted_water_mark = None
+        self.opacity_adjusted_water_mark = None
+        self.water_mark_width = None
+        self.water_mark_height = None
 
     def make_final_image(self):
-        # self.make_default_pos()
-        rotated_image = self.processed_watermark.rotate(angle=self.rotation, expand=True, )
+
+        rotated_image = self.opacity_adjusted_water_mark.rotate(angle=self.rotation, expand=True, )
+        self.height = rotated_image.height
+        self.width = rotated_image.width
         new = Image.new("RGBA", self.base_image.size, (255, 255, 255, 0), )
         new.paste(rotated_image, (self.x_pos, self.y_pos))
         self.result_image = Image.alpha_composite(self.base_image, new, )
 
+    def update_opacity(self):
+        new_data = []
+        self.opacity_adjusted_water_mark = self.size_adjusted_water_mark.copy()
+        image_data = self.size_adjusted_water_mark.getdata()
+
+        for item in image_data:
+            if item[3] > self.opacity:
+                new_data.append((item[0], item[1], item[2], self.opacity))
+            else:
+                new_data.append(item)
+        self.opacity_adjusted_water_mark.putdata(new_data)
+
     def make_default_pos(self):
-        self.x_pos = self.base_image.width - self.processed_watermark.width - 20
-        self.y_pos = self.base_image.height - self.processed_watermark.height - 20
+        self.x_pos = self.base_image.width - self.width - 20
+        self.y_pos = self.base_image.height - self.height - 20
 
     def update_size(self, size):
         self.current_size = size
-        self.processed_watermark = self.image_to_mark.resize(self.sizes[size])
+        self.size_adjusted_water_mark = self.image_to_mark.resize(self.sizes[size])
+        self.update_opacity()
+        # self.opacity_adjusted_water_mark = self.size_processed_water_mark.copy()
 
     def update_image_to_mark(self, image):
         self.image_to_mark = image
@@ -39,23 +59,43 @@ class ImageMark:
         # self.processed_watermark = self.image_to_mark.resize(self.sizes[5], resample=Image.Resampling.LANCZOS)
 
     def update_info(self):
-        width = int((self.base_image.width*15)/100)
-        height = int((self.base_image.height*15)/100)
-        self.processed_watermark = self.image_to_mark.copy()
+        self.current_size = 5
+        self.rotation = 0
+        self.width = int((self.base_image.width*15)/100)
+        self.height = int((self.base_image.height*15)/100)
+        self.size_adjusted_water_mark = self.image_to_mark.copy()
 
-        self.processed_watermark.thumbnail((width, height))
+        self.size_adjusted_water_mark.thumbnail((self.width, self.height))
+        self.opacity_adjusted_water_mark = self.size_adjusted_water_mark.copy()
 
-        width = int(self.processed_watermark.width)
-        height = int(self.processed_watermark.height)
+        self.width = int(self.size_adjusted_water_mark.width)
+        self.height = int(self.size_adjusted_water_mark.height)
 
         self.sizes = {
-            5: (width, height),
-            6: (width * 2, height * 2),
-            7: (width * 3, height * 3),
-            8: (width * 4, height * 4),
-            9: (width * 5, height * 5),
-            10: (width * 6, height * 6)
+            5: (self.width, self.height),
+            6: (self.width * 2, self.height * 2),
+            7: (self.width * 3, self.height * 3),
+            8: (self.width * 4, self.height * 4),
+            9: (self.width * 5, self.height * 5),
+            10: (self.width * 6, self.height * 6)
         }
+        self.make_default_pos()
+
+    def move_up(self):
+        self.y_pos = self.y_pos - 20
+        self.make_final_image()
+
+    def move_down(self):
+        self.y_pos = self.y_pos + 20
+        self.make_final_image()
+
+    def move_left(self):
+        self.x_pos = self.x_pos - 20
+        self.make_final_image()
+
+    def move_right(self):
+        self.x_pos = self.x_pos + 20
+        self.make_final_image()
 
     def receive_base_image(self, image):
         self.base_image = image

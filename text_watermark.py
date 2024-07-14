@@ -8,7 +8,7 @@ class TextMark:
         self.font_list = sorted(set([f.name for f in fm.fontManager.ttflist]))
         self.text = "PHOTOMARK"
         self.font = "arial"
-        self.opacity = 255
+        self.opacity = 191
         self.size = 5
         self.color = (255, 255, 255)
         self.color_with_opacity = (self.color + (self.opacity, ))

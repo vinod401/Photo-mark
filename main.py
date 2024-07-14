@@ -29,6 +29,7 @@ def textmark_active():
 
     textmark.image_to_make(image=BASE_IMAGE)
     textmark.make_final_image()
+
     display_result()
 
 
@@ -64,7 +65,6 @@ def image_mark_active():
     rotation.set(image_mark.rotation)
     watermark_size.delete(0, END)
     watermark_size.insert(1, image_mark.current_size)
-
     image_mark.make_final_image()
     display_result()
 
@@ -100,6 +100,11 @@ def update_opacity(new_value):
     if radio_value.get() == "text":
         textmark.opacity = int((255 * opacity.get() / 100))
         textmark_active()
+
+    else:
+        image_mark.opacity = int((255 * opacity.get() / 100))
+        image_mark.update_opacity()
+        image_mark_active()
 
 
 def update_size():
@@ -152,9 +157,9 @@ def upload_image():
         BASE_IMAGE = Image.open(img_path)
         BASE_IMAGE = BASE_IMAGE.convert("RGBA")
 
-        textmark.image_to_make(image=BASE_IMAGE)
         image_mark.receive_base_image(image=BASE_IMAGE)
         image_mark.make_default_pos()
+        image_mark.update_opacity()
 
         radio_value.set("text")
         opacity.set(75)
@@ -167,7 +172,8 @@ def move_up():
     if radio_value.get() == "text":
         textmark.move_up()
     else:
-        pass
+        image_mark.move_up()
+
     display_result()
 
 
@@ -175,7 +181,7 @@ def move_down():
     if radio_value.get() == "text":
         textmark.move_down()
     else:
-        pass
+        image_mark.move_down()
     display_result()
 
 
@@ -183,7 +189,7 @@ def move_left():
     if radio_value.get() == "text":
         textmark.move_left()
     else:
-        pass
+        image_mark.move_left()
     display_result()
 
 
@@ -191,7 +197,7 @@ def move_right():
     if radio_value.get() == "text":
         textmark.move_right()
     else:
-        pass
+        image_mark.move_right()
     display_result()
 
 
@@ -201,7 +207,8 @@ def default_position():
         textmark.default_pos()
         textmark_active()
     else:
-        pass
+        image_mark.make_default_pos()
+        image_mark_active()
 
 
 def save_image():
