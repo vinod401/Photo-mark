@@ -1,10 +1,4 @@
-![Photomark_screen-6](https://github.com/user-attachments/assets/31a8e007-19d6-4cf8-8fa7-e926c93b5676)![Photomark-04](https://github.com/user-attachments/assets/ccc4e0ad-ca8b-4c8e-969f-c83d71e7e44d)<!-- Generator: Adobe Illustrator 23.0.5, SVG Export Plug-In  -->
-<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
-	 width="768.96px" height="476.1px" viewBox="0 0 768.96 476.1" style="enable-background:new 0 0 768.96 476.1;"
-	 xml:space="preserve">
-<defs>
-</defs>
-<h1> PhotomArk</h1>
+<h1> PhotoMark</h1>
 <p>Desktop appliaction to add watermark (image/text) to an image. The watermarks sizes are relational to the uploaded images. so it can perform same with different sized images. The live preview
 also helps the user to edit watermark effortlessly</p>
 
