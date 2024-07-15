@@ -43,10 +43,14 @@ def update_textbox(event):
 
 
 def update_text_color():
-    color_code = colorchooser.askcolor(title="Choose color")
-    color_box.config(background=str(color_code[1]))
-    textmark.color = color_code[0]
-    textmark_active()
+    try:
+        color_code = colorchooser.askcolor(title="Choose color")
+        color_box.config(background=str(color_code[1]))
+        textmark.color = color_code[0]
+        textmark_active()
+
+    except TclError:
+        pass
 
 
 def text_font_update(event):
@@ -246,8 +250,6 @@ def save_image():
         else:
             image_mark.result_image.save(path)
         tkinter.messagebox.showinfo(title="Success", message=f"File successfully saved at location\n{path}")
-
-
 
 
 # ------------------------------------------- ui   --------------------------------------------------------------------
